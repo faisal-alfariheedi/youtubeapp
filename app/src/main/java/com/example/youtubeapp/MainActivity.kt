@@ -6,6 +6,7 @@ import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.graphics.Color
+import android.graphics.Color.parseColor
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import android.os.Bundle
@@ -28,26 +29,36 @@ import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import android.util.Log
 import android.view.View
+import android.view.WindowManager
+import android.widget.Button
 import androidx.annotation.NonNull
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toDrawable
+import androidx.core.view.isVisible
+import kotlinx.coroutines.Dispatchers.IO
 
 
 class MainActivity : AppCompatActivity() {
+    // the variables
     lateinit var ytvp: YouTubePlayerView
     lateinit var rv: RecyclerView
-    var vdidlist: ArrayList<vid> = arrayListOf()
+    var vdidlist: ArrayList<vid> = arrayListOf() // video list
     lateinit var player: YouTubePlayer
-    lateinit var add: FloatingActionButton
-    private lateinit var sp: SharedPreferences
+    lateinit var add: FloatingActionButton // floating button to add video to the list
+    private lateinit var sp: SharedPreferences // this feature won`t be enabled because of a bug so add videos from user won`t be saved
     var a =this
-    var cur:String="dQw4w9WgXcQ"
-    var time:Float=0f
-
+    var cur:String="dQw4w9WgXcQ" //default video start for the app
+    var time:Float=0f // this doesn`t work wasn`t able to find a way to get the time
+    var f:Boolean = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         rv=findViewById(R.id.rvmain)
         ci()
         ytvpsetup()
+
+        // i hade problems with coroutine so the video loading is running on main thread
         val policy = ThreadPolicy.Builder()
             .permitAll().build()
         StrictMode.setThreadPolicy(policy)
@@ -55,32 +66,33 @@ class MainActivity : AppCompatActivity() {
         add.setOnClickListener{
             showAlertDialog("enter video`s url")
         }
-        
-        saverestore(true)
+        if(f) {
+            saverestore(true)
+        }
     }
-
-
-
-     fun onVideoId(youTubePlayer: YouTubePlayer,  videoId: String) {
-            for (i in vdidlist){
-                if(i.items!![0].id==videoId)
-                    findViewById<TextView>(R.id.tvtitle).text=i.items!![0].snippet?.title.toString()
-            }
-    }
-
-
 
     fun ytvpsetup(){
-        add=findViewById(R.id.floatingActionButton)
+        add=findViewById(R.id.add)
         ytvp = findViewById(R.id.ytpv)
         lifecycle.addObserver(ytvp)
         ytvp.addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
             override fun onReady(youTubePlayer: YouTubePlayer) {
                 val videoId = cur
                 player=youTubePlayer
-                player.loadVideo(videoId, time)
+                f=CoroutineScope(Dispatchers.IO).launch{
+                    player.loadVideo(cur, time)
+                }.isCompleted
                 findViewById<TextView>(R.id.tvtitle).text = getvidname("dQw4w9WgXcQ").items!![0].snippet?.title.toString()
                 rvinit()
+            }
+            override fun onVideoId(youTubePlayer: YouTubePlayer,  videoId: String) {
+                for (i in vdidlist){
+                    if(i.items!![0].id==videoId)
+                        findViewById<TextView>(R.id.tvtitle).text=i.items!![0].snippet?.title.toString()
+                }
+            }
+            override fun onCurrentSecond(youTube:YouTubePlayer, seconds:Float){
+                time=seconds
             }
 
         })
@@ -90,7 +102,6 @@ class MainActivity : AppCompatActivity() {
         if (vdidlist.isEmpty()) {
             vdidlist.add(getvidname("dQw4w9WgXcQ"))
         }
-        add=findViewById(R.id.floatingActionButton)
 
         rv.layoutManager = LinearLayoutManager(this)
         rv.adapter=RVAdapter(vdidlist,player)
@@ -98,10 +109,18 @@ class MainActivity : AppCompatActivity() {
     }
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        if (newConfig.orientation === Configuration.ORIENTATION_LANDSCAPE) {
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             ytvp.enterFullScreen()
-        } else if (newConfig.orientation === Configuration.ORIENTATION_PORTRAIT) {
+            if (supportActionBar != null) {
+                supportActionBar?.hide()
+            }
+            add.isVisible=false
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
             ytvp.exitFullScreen()
+                if (supportActionBar != null) {
+                    supportActionBar?.show()
+                }
+            add.isVisible = true
         }
     }
 
@@ -109,20 +128,19 @@ class MainActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
         if(vdidlist.isNotEmpty()){
         for (i in vdidlist){
-            if(findViewById<TextView>(R.id.tvtitle).text.equals(i.items!![0]?.snippet?.title))
-                cur= i.items!![0]?.id.toString()
+            if(findViewById<TextView>(R.id.tvtitle).text.equals(i.items!![0].snippet?.title))
+                cur= i.items!![0].id.toString()
         }}
-
-
         outState.putString("currentVideo", cur)
         outState.putFloat("timeStamp", time)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-
         cur = savedInstanceState.getString("currentVideo").toString()
         time = savedInstanceState.getFloat("timeStamp", 0f)
+        ytvpsetup()
+
     }
 
      fun getvidname(id:String): vid {

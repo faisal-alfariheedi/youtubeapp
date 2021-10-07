@@ -2,6 +2,8 @@ package com.example.youtubeapp
 
 import com.google.gson.annotations.SerializedName
 
+
+//      the model for the json to read video title and id
 class vid(id: String, title: String) {
     @SerializedName("items")
     var items:Array<d>?=null

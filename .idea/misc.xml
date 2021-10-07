@@ -4,7 +4,8 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/Faisal/AndroidStudioProjects/youtubeapp/app/src/main/res/drawable/rvback.xml" value="0.3148148148148148" />
-        <entry key="..\:/Users/Faisal/AndroidStudioProjects/youtubeapp/app/src/main/res/layout/activity_main.xml" value="0.328125" />
+        <entry key="..\:/Users/Faisal/AndroidStudioProjects/youtubeapp/app/src/main/res/layout-land/activity_main.xml" value="0.24791666666666667" />
+        <entry key="..\:/Users/Faisal/AndroidStudioProjects/youtubeapp/app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="..\:/Users/Faisal/AndroidStudioProjects/youtubeapp/app/src/main/res/layout/rvlist.xml" value="0.328125" />
         <entry key="..\:/Users/Faisal/AndroidStudioProjects/youtubeapp/app/src/main/res/layout/youtubeview.xml" value="0.328125" />
       </map>

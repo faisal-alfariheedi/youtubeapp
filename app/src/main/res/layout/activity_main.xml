@@ -6,53 +6,51 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+        android:id="@+id/ytpv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        app:autoPlay="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:showFullScreenButton="true"
+        app:showSeekBar="true"
+
+        app:showVideoCurrentTime="true"
+        app:showVideoDuration="true"
+        app:showYouTubeButton="true"
+        app:videoId="">
+
+
+    </com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView>
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="0dp"
+        android:background="@drawable/rvback"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ytpv">
 
-        <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
-            android:id="@+id/ytpv"
+        <TextView
+            android:id="@+id/tvtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:lines="2"
+            android:text="TextView"
+            android:textSize="20sp" />
 
-            app:autoPlay="true"
-            app:showFullScreenButton="false"
-            app:showSeekBar="true"
-            app:showVideoCurrentTime="true"
-            app:showVideoDuration="true"
-            app:showYouTubeButton="true"
-
-            app:videoId="">
-
-
-        </com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView>
-
-        <LinearLayout
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvmain"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/rvback"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/tvtitle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:lines="2"
-                android:text="TextView"
-                android:textSize="20sp" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvmain"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-        </LinearLayout>
+            android:layout_height="match_parent" />
 
     </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floatingActionButton"
+        android:id="@+id/add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/purple_200"

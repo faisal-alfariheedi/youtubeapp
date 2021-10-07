@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 
 
-
+// RV adapter and video switching is here
 class RVAdapter(private val rv: ArrayList<vid>, private val player: YouTubePlayer): RecyclerView.Adapter<RVAdapter.ItemViewHolder>()  {
     class ItemViewHolder(itemView: View): RecyclerView.ViewHolder(itemView)
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RVAdapter.ItemViewHolder {
