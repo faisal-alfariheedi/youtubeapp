@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
     var a =this
     var cur:String="dQw4w9WgXcQ" //default video start for the app
     var time:Float=0f // this doesn`t work wasn`t able to find a way to get the time
-    var f:Boolean = false
+    var f:Boolean = false// turn true for sharepref to work note it is bugged
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -58,7 +58,11 @@ class MainActivity : AppCompatActivity() {
         ci()
         ytvpsetup()
 
-        // i hade problems with coroutine so the video loading is running on main thread
+        //use this method to add more video copy a url into it
+        //urlconverter(url:String)
+        //if you want to use video id use this
+        //getvidname(id:String)
+        // i had problems with coroutine so the video loading is running on main thread
         val policy = ThreadPolicy.Builder()
             .permitAll().build()
         StrictMode.setThreadPolicy(policy)
@@ -71,15 +75,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    ////////////// first stage setup method
     fun ytvpsetup(){
         add=findViewById(R.id.add)
         ytvp = findViewById(R.id.ytpv)
         lifecycle.addObserver(ytvp)
         ytvp.addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
             override fun onReady(youTubePlayer: YouTubePlayer) {
-                val videoId = cur
                 player=youTubePlayer
-                f=CoroutineScope(Dispatchers.IO).launch{
+                CoroutineScope(Dispatchers.IO).launch{
                     player.loadVideo(cur, time)
                 }.isCompleted
                 findViewById<TextView>(R.id.tvtitle).text = getvidname("dQw4w9WgXcQ").items!![0].snippet?.title.toString()
@@ -97,6 +101,8 @@ class MainActivity : AppCompatActivity() {
 
         })
     }
+
+    //////////// second stage setup
     fun rvinit(){
 
         if (vdidlist.isEmpty()) {
@@ -107,6 +113,9 @@ class MainActivity : AppCompatActivity() {
         rv.adapter=RVAdapter(vdidlist,player)
 
     }
+
+
+    /////////// rotation action
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -124,6 +133,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
+    //////////  GUARDIAN of DATA from the rotation monster
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         if(vdidlist.isNotEmpty()){
@@ -142,7 +153,9 @@ class MainActivity : AppCompatActivity() {
         ytvpsetup()
 
     }
+////////////////////////////////////////////////////////////////////////////////////
 
+    //////// the name doesn`t describe it but this gives the vidobject
      fun getvidname(id:String): vid {
          var d: vid
          d=vid("dQw4w9WgXcQ","rick")
@@ -157,7 +170,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
-
+    /////internet check
     private fun ci(){
         val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
@@ -170,7 +183,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
+    ////////dialog builder
     fun showAlertDialog(title: String) {
         val dialogBuilder = AlertDialog.Builder(this)
         val input= EditText(this)
@@ -181,7 +194,9 @@ class MainActivity : AppCompatActivity() {
                 CoroutineScope(Dispatchers.Main).launch {
                     async {
                         vdidlist.add(urlconverter(input.text.toString()))
-                        saverestore(false)
+                        if(f) {
+                            saverestore(false)
+                        }
                     }.await()
 
 
@@ -200,6 +215,10 @@ class MainActivity : AppCompatActivity() {
         alert.setView(input)
         alert.show()
     }
+
+
+
+    ///////url converter a most to use the getvidname method
     fun urlconverter(url:String): vid {
         var urll:String=""
         var boo:Boolean=false
@@ -216,7 +235,7 @@ class MainActivity : AppCompatActivity() {
         return getvidname(urll)
     }
 
-
+    //////////////// the buggey restore i have a problem in it, it restore null snippet
     private fun saverestore(s:Boolean) {
         var size: Int
         sp = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE)
