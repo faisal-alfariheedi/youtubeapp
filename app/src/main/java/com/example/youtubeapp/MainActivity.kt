@@ -163,7 +163,7 @@ class MainActivity : AppCompatActivity() {
              var jasonread: GsonBuilder = GsonBuilder()
              jasonread.setLenient()
              var a = jasonread.create()
-             val data = a.fromJson(URL("https://www.googleapis.com/youtube/v3/videos?id=${id}&key=AIzaSyCf-Af-SNAsqCjRSFMo9N_I5h8GHtwN0BM&fields=items(id,snippet(channelId,title,categoryId),statistics)&part=snippet,statistics").readText(Charsets.UTF_8), vid::class.java)
+             val data = a.fromJson(URL("https://www.googleapis.com/youtube/v3/videos?id=${id}&key=${APIKEY}&fields=items(id,snippet(channelId,title,categoryId),statistics)&part=snippet,statistics").readText(Charsets.UTF_8), vid::class.java)
              d = data
          return d
      }
